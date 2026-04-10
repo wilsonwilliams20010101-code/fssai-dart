@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
-from static_responses import (
+from backend.static_responses import (
     DEFAULT_RESPONSE,
     answer_message,
     analyze_observation,
