@@ -76,3 +76,9 @@ if os.path.exists(frontend_path):
     @app.get("/{full_path:path}")
     def serve_react(full_path: str):
         return FileResponse(os.path.join(frontend_path, "index.html"))
+
+from fastapi.responses import HTMLResponse
+
+@app.get("/", response_class=HTMLResponse)
+def home():
+    return "<h1>FSSAI DART API is running 🚀</h1>"
