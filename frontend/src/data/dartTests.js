@@ -17,6 +17,33 @@ const normalizeText = (input = "") => {
 
 const unique = (arr = []) => [...new Set(arr.filter(Boolean))];
 
+const tokenSet = (text = "") => new Set(normalizeText(text).split(" ").filter(Boolean));
+
+const genericTokens = new Set([
+  "does",
+  "not",
+  "the",
+  "and",
+  "with",
+  "from",
+  "into",
+  "very",
+  "fast",
+  "slow",
+  "top",
+  "bottom",
+  "partial",
+  "visible",
+  "layer",
+  "particles",
+  "formed",
+  "turn",
+  "turns",
+  "color",
+  "colour",
+  "water",
+]);
+
 const keywordVariants = (word) => {
   const w = normalizeText(word);
   if (!w) return [];
@@ -70,7 +97,7 @@ const expandKeywords = (keywords = []) => {
     const n = normalizeText(k);
 
     n.split(" ").forEach((token) => {
-      if (token.length >= 3) expanded.add(token);
+      if (token.length >= 4 && !genericTokens.has(token)) expanded.add(token);
     });
 
     Object.entries(synonymMap).forEach(([root, list]) => {
@@ -90,8 +117,13 @@ const flexibleIncludes = (text, keyword) => {
   if (!t || !k) return false;
   if (t.includes(k)) return true;
 
-  const kt = k.split(" ").filter(Boolean);
-  const matched = kt.filter((x) => t.includes(x));
+  const tt = tokenSet(t);
+  const kt = k.split(" ").filter((x) => x && !genericTokens.has(x));
+  if (kt.length === 1) return tt.has(kt[0]);
+
+  if (kt.length === 0) return false;
+
+  const matched = kt.filter((x) => tt.has(x));
   if (kt.length >= 2 && matched.length >= Math.ceil(kt.length * 0.7)) {
     return true;
   }
@@ -107,12 +139,18 @@ export const detectAdulteration = (userInput = "", tests = {}) => {
     .flat()
     .forEach((test) => {
       const expanded = expandKeywords(test.keywords || []);
+      const originalScore = (test.keywords || []).reduce((acc, kw) => {
+        if (flexibleIncludes(normalized, kw)) return acc + 1;
+        return acc;
+      }, 0);
       const score = expanded.reduce((acc, kw) => {
         if (flexibleIncludes(normalized, kw)) return acc + 1;
         return acc;
       }, 0);
 
-      if (score > 0) {
+      const requiredScore = originalScore > 0 ? 1 : expanded.length > 12 ? 2 : 1;
+
+      if (score >= requiredScore) {
         results.push({
           id: test.id,
           testNo: test.testNo,
