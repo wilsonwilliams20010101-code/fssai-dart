@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import csv
 import re
+import random
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -111,6 +112,50 @@ FOLLOW_UP_HINTS = {
     "it", "this", "that", "these", "those", "same", "risk", "health",
     "dangerous", "safe", "steps", "procedure", "result", "report",
 }
+RESPONSE_TEMPLATES = {
+    "openers": [
+        "This looks like",
+        "Based on what you described, this points to",
+        "The closest DART match appears to be",
+        "This most likely matches",
+        "From your observation, this resembles",
+    ],
+    "high_conf": [
+        "I'm quite confident in this match.",
+        "This is a strong match.",
+        "The clues align very closely.",
+    ],
+    "mid_conf": [
+        "This seems likely, but one detail can confirm it.",
+        "This is a probable match.",
+        "A quick confirmation will narrow it down.",
+    ],
+    "low_conf": [
+        "I see a possible match, but I need one more clue.",
+        "There are multiple possibilities here.",
+        "A little more detail will help me pin it down.",
+    ],
+    "clarify": [
+        "Did you notice foam, residue, colour change, floating, or a separate layer?",
+        "What happened exactly — did it float, settle, stain, foam, or change colour?",
+        "Tell me the exact visible change you noticed.",
+    ],
+    "closers": [
+        "Tell me what you observed next.",
+        "Give me one more detail and I can refine the result.",
+        "Describe the exact outcome and I'll narrow it further.",
+    ]
+}
+
+def pick(bucket):
+    return random.choice(RESPONSE_TEMPLATES[bucket])
+
+def confidence_band(score: int) -> str:
+    if score >= 90:
+        return "high_conf"
+    if score >= 60:
+        return "mid_conf"
+    return "low_conf"
 
 @lru_cache(maxsize=1)
 def load_data() -> Dict[str, Any]:
@@ -375,7 +420,7 @@ def answer_for_test(test: Dict[str, Any], message: str) -> Dict[str, Any]:
 
     keywords = test.get("keywords", [])
     if keywords:
-        response += "\n\nCommon clues: " + ", ".join(keywords[:5])
+        response += "\n\nClues I can recognize:: " + ", ".join(keywords[:5])
 
     return {
         "response": response,
@@ -387,54 +432,55 @@ def answer_for_test(test: Dict[str, Any], message: str) -> Dict[str, Any]:
     }
 
 
-def answer_for_test_agent(test: Dict[str, Any], message: str) -> Dict[str, Any]:
+def answer_for_test_agent(test: Dict[str, Any], message: str, score: int = 75) -> Dict[str, Any]:
     intent = find_intent(message)
     category = test.get("category_name", "Unknown category")
-    intro = f"I found the closest DART match: **Test {test['testNo']} - {test['name']}** in **{category}**."
+
+    intro = (
+        f"{pick('openers')} "
+        f"**Test {test['testNo']} — {test['name']}** "
+        f"in **{category}**. "
+        f"{pick(confidence_band(score))}"
+    )
 
     if intent == "procedure":
-        procedure = "\n".join(f"{i+1}. {step}" for i, step in enumerate(test.get("procedure", [])))
-        response = (
-            f"{intro}\n\n"
-            "Here is the test procedure:\n"
-            f"{procedure}\n\n"
-            "After you perform it, tell me exactly what you saw: colour change, layer, residue, foam, floating/sinking, or magnet response."
-        )
-    elif intent == "results":
-        response = (
-            f"{intro}\n\n"
-            f"**If the sample is pure:** {test.get('pureResult', 'Not provided')}\n"
-            f"**If adulterated:** {test.get('adulteratedResult', 'Not provided')}\n\n"
-            "If you tell me your actual observation, I can interpret it against these two outcomes."
-        )
-    elif intent == "health":
-        response = (
-            f"{intro}\n\n"
-            f"**Risk level:** {test.get('riskLevel', 'Unknown')}\n"
-            f"**Health concern:** {test.get('healthRisk', 'Not provided')}\n\n"
-            "If the test result matches the adulterated pattern, avoid consuming the sample and report it to FSSAI."
-        )
-    elif is_observation(message):
-        response = (
-            f"{intro}\n\n"
-            f"Your observation may relate to **{test.get('adulterant', 'an adulterant')}**.\n"
-            f"**Adulterated pattern:** {test.get('adulteratedResult', 'Not provided')}\n"
-            f"**Pure pattern:** {test.get('pureResult', 'Not provided')}\n\n"
-            "To be more certain, tell me the food item and whether this was exactly after following the DART steps."
-        )
-    else:
-        response = (
-            f"{intro}\n\n"
-            f"It checks for **{test.get('adulterant', 'unknown adulterant')}**.\n"
-            f"**Pure result:** {test.get('pureResult', 'Not provided')}\n"
-            f"**Adulterated result:** {test.get('adulteratedResult', 'Not provided')}\n"
-            f"**Risk level:** {test.get('riskLevel', 'Unknown')}\n\n"
-            "You can ask me for the steps, health risk, or paste your observation and I will interpret it."
+        procedure = "\\n".join(
+            f"{i+1}. {step}"
+            for i, step in enumerate(test.get("procedure", []))
         )
 
-    keywords = test.get("keywords", [])
-    if keywords:
-        response += "\n\nClues I can recognize: " + ", ".join(keywords[:5])
+        response = (
+            f"{intro}\\n\\n"
+            f"**Procedure:**\\n{procedure}\\n\\n"
+            f"{pick('clarify')}"
+        )
+
+    elif intent == "health":
+        response = (
+            f"{intro}\\n\\n"
+            f"**Risk Level:** {test.get('riskLevel','Unknown')}\\n"
+            f"**Health Risk:** {test.get('healthRisk','Not provided')}\\n\\n"
+            f"{pick('closers')}"
+        )
+
+    elif is_observation(message):
+        response = (
+            f"{intro}\\n\\n"
+            f"Your observation may indicate **{test.get('adulterant','unknown adulterant')}**.\\n"
+            f"**Expected adulterated sign:** {test.get('adulteratedResult','Not provided')}\\n"
+            f"**Expected pure sign:** {test.get('pureResult','Not provided')}\\n\\n"
+            f"{pick('clarify')}"
+        )
+
+    else:
+        response = (
+            f"{intro}\\n\\n"
+            f"It checks for **{test.get('adulterant','unknown adulterant')}**.\\n"
+            f"**Pure Result:** {test.get('pureResult','Not provided')}\\n"
+            f"**Adulterated Result:** {test.get('adulteratedResult','Not provided')}\\n"
+            f"**Risk:** {test.get('riskLevel','Unknown')}\\n\\n"
+            f"{pick('closers')}"
+        )
 
     return {
         "response": response,
@@ -444,8 +490,6 @@ def answer_for_test_agent(test: Dict[str, Any], message: str) -> Dict[str, Any]:
         "category": category,
         "full": test,
     }
-
-
 def answer_general(message: str) -> Optional[Dict[str, Any]]:
     msg = norm(message)
 
@@ -476,7 +520,7 @@ def answer_general(message: str) -> Optional[Dict[str, Any]]:
                     f"🗂️ {category['name']} has {len(items)} tests in this app.\n"
                     f"{category.get('description', '')}\n\n"
                     f"Top tests:\n{preview}\n\n"
-                    f"Ask me for a test number or exact item name and I will explain the steps."
+                    f"What would you like to check first? You can tell me a food item, test number, or what you observed."
                 ),
                 "mode": "dataset_agent",
                 "_category_fallback": True,
@@ -519,9 +563,27 @@ def answer_message(message: str, history: Optional[List[Dict[str, Any]]] = None)
             "mode": "dataset_agent",
         }
 
-    test = find_best_test(message)
-    if test:
-        return answer_for_test_agent(test, message)
+        ranked = find_ranked_tests(message)
+
+    if ranked:
+        score, test = ranked[0]
+
+        if len(ranked) > 1 and ranked[0][0] - ranked[1][0] <= 10:
+            options = "\n".join(
+                f"• Test {t['testNo']}: {t['name']}"
+                for _, t in ranked[:3]
+            )
+
+            return {
+                "response": (
+                    "I found multiple close matches:\n\n"
+                    f"{options}\n\n"
+                    f"{pick('clarify')}"
+                ),
+                "mode": "dataset_agent",
+            }
+
+        return answer_for_test_agent(test, message, score)
 
     if general:
         general.pop("_category_fallback", None)
