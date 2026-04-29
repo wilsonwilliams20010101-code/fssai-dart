@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
-import { getTestById, categories, tests as allTests } from "../data/dartTests";
+import { getBestMatch, getTestById, categories, tests as allTests } from "../data/dartTests";
 import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -281,7 +281,8 @@ export default function TestDetail() {
 // Client-side fallback when backend is down
 function getClientSideResult(test, observation) {
   const obs = observation.toLowerCase();
-  const isAdulterated = test.keywords?.some(k => obs.includes(k.toLowerCase()));
+  const matched = getBestMatch(observation, { current: [test] });
+  const isAdulterated = Boolean(matched) || test.keywords?.some(k => obs.includes(k.toLowerCase()));
   
   if (isAdulterated) {
     return {
@@ -290,6 +291,7 @@ function getClientSideResult(test, observation) {
       explanation: `Based on your observation and DART test guidelines, your food may contain ${test.adulterant}. ${test.adulteratedResult}`,
       health_effects: [test.healthRisk],
       risk_level: test.riskLevel || "High",
+      confidence: matched?.confidence,
       action: "Report to FSSAI at 1800-11-2100. For full AI analysis, start the backend server.",
       mode: "offline"
     };

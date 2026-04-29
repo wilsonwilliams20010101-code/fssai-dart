@@ -1,3 +1,136 @@
+/* =========================================================
+   Upgraded Adulteration Detection Engine
+   - Keeps app structure intact
+   - Adds robust normalization + flexible matching
+   - No external dependencies
+========================================================= */
+
+const normalizeText = (input = "") => {
+  return String(input)
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^\w\s]/g, " ")
+    .replace(/[_-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+const unique = (arr = []) => [...new Set(arr.filter(Boolean))];
+
+const keywordVariants = (word) => {
+  const w = normalizeText(word);
+  if (!w) return [];
+
+  const variants = new Set([
+    w,
+    w.replace(/\s+/g, ""),
+    w.replace(/\s+/g, "-"),
+    w.replace(/\s+/g, "_"),
+    w.replace(/colour/g, "color"),
+    w.replace(/color/g, "colour"),
+    w.replace(/grey/g, "gray"),
+    w.replace(/gray/g, "grey"),
+    w.replace(/formed/g, "form"),
+    w.replace(/forming/g, "form"),
+    w.replace(/turns/g, "turn"),
+    w.replace(/turned/g, "turn"),
+    w.replace(/immediately/g, "instant"),
+    w.replace(/instant/g, "immediately"),
+    w.replace(/bluish/g, "blue"),
+    w.replace(/reddish/g, "red"),
+    w.replace(/yellowish/g, "yellow"),
+    w.replace(/foamy/g, "foam"),
+    w.replace(/bubbly/g, "bubbles"),
+  ]);
+
+  return [...variants];
+};
+
+const expandKeywords = (keywords = []) => {
+  const expanded = new Set();
+  const synonymMap = {
+    blue: ["bluish", "navy", "dark blue", "blue shade", "blue tint"],
+    red: ["reddish", "scarlet", "red shade", "red tint"],
+    foam: ["froth", "foamy", "frothy", "bubbles", "bubbling", "lather"],
+    lather: ["foam", "dense foam", "soap bubbles", "thick foam"],
+    cloudy: ["hazy", "murky", "not clear", "opaque", "blurred"],
+    clear: ["transparent", "clean", "limpid", "crystal clear"],
+    sediment: ["deposit", "residue", "settled particles", "settles down"],
+    layer: ["separate layer", "double layer", "two layers", "split layer"],
+    floating: ["floats", "float", "surface particles", "top layer"],
+    burn: ["ignite", "lights up", "catches fire"],
+    disperse: ["mixes", "spreads", "dissolves", "blends"],
+    crackling: ["cracking sound", "popping sound", "crackle"],
+    impurity: ["foreign matter", "dirt", "contamination", "particles"],
+  };
+
+  keywords.forEach((k) => {
+    keywordVariants(k).forEach((v) => expanded.add(v));
+
+    const n = normalizeText(k);
+
+    n.split(" ").forEach((token) => {
+      if (token.length >= 3) expanded.add(token);
+    });
+
+    Object.entries(synonymMap).forEach(([root, list]) => {
+      if (n.includes(root)) {
+        list.forEach((v) => expanded.add(normalizeText(v)));
+      }
+    });
+  });
+
+  return unique([...expanded]);
+};
+
+const flexibleIncludes = (text, keyword) => {
+  const t = normalizeText(text);
+  const k = normalizeText(keyword);
+
+  if (!t || !k) return false;
+  if (t.includes(k)) return true;
+
+  const kt = k.split(" ").filter(Boolean);
+  const matched = kt.filter((x) => t.includes(x));
+  if (kt.length >= 2 && matched.length >= Math.ceil(kt.length * 0.7)) {
+    return true;
+  }
+
+  return false;
+};
+
+export const detectAdulteration = (userInput = "", tests = {}) => {
+  const normalized = normalizeText(userInput);
+  const results = [];
+
+  Object.values(tests)
+    .flat()
+    .forEach((test) => {
+      const expanded = expandKeywords(test.keywords || []);
+      const score = expanded.reduce((acc, kw) => {
+        if (flexibleIncludes(normalized, kw)) return acc + 1;
+        return acc;
+      }, 0);
+
+      if (score > 0) {
+        results.push({
+          id: test.id,
+          testNo: test.testNo,
+          name: test.name,
+          adulterant: test.adulterant,
+          riskLevel: test.riskLevel,
+          healthRisk: test.healthRisk,
+          confidence: Math.min(
+            100,
+            Math.round((score / Math.max(expanded.length, 1)) * 500)
+          ),
+        });
+      }
+    });
+
+  return results.sort((a, b) => b.confidence - a.confidence);
+};
+
 export const categories = [
   { id: "milk-dairy", name: "Milk & Dairy", icon: "🥛", color: "#e3f2fd", accent: "#1565c0", description: "Milk, ghee, butter, paneer, khoya, chenna" },
   { id: "oils-fats", name: "Oils & Fats", icon: "🫙", color: "#fff8e1", accent: "#f57f17", description: "Coconut oil, edible oils, refined oils" },
@@ -25,7 +158,26 @@ export const tests = {
       adulteratedResult: "Milk flows immediately without leaving any mark.",
       healthRisk: "Diluted milk reduces nutritional value; pathogens in unclean water can cause gastrointestinal infections.",
       riskLevel: "Medium",
-      keywords: ["flows immediately", "no mark", "no trail", "flows fast", "water mark"],
+      keywords: [
+        "flows immediately",
+        "no mark",
+        "no trail",
+        "flows fast",
+        "water mark",
+        "runs quickly",
+        "runs fast",
+        "thin flow",
+        "watery",
+        "diluted",
+        "very runny",
+        "slides quickly",
+        "does not stick",
+        "no white trail",
+        "instant flow",
+        "liquidy",
+        "fast moving drop",
+        "spreads quickly",
+      ],
     },
     {
       id: "milk-2",
@@ -42,7 +194,23 @@ export const tests = {
       adulteratedResult: "Dense, persistent lather forms on shaking.",
       healthRisk: "Detergent in milk can cause gastrointestinal disorders, stomach irritation, vomiting, and diarrhea. Long-term exposure may affect liver and kidneys.",
       riskLevel: "High",
-      keywords: ["dense lather", "thick foam", "foam formed", "lather", "bubbles"],
+      keywords: [
+        "dense lather",
+        "thick foam",
+        "foam formed",
+        "lather",
+        "bubbles",
+        "persistent foam",
+        "soap bubbles",
+        "froth",
+        "frothy",
+        "dense bubbles",
+        "excess foam",
+        "foamy",
+        "thick lather",
+        "soap like foam",
+        "white froth",
+      ],
     },
     {
       id: "milk-3",
@@ -60,7 +228,19 @@ export const tests = {
       adulteratedResult: "Blue colour formation indicates presence of starch.",
       healthRisk: "Starch adulteration reduces nutritional value. Can cause digestive issues, especially in infants and people with starch intolerance.",
       riskLevel: "Medium",
-      keywords: ["blue colour", "blue color", "turns blue", "iodine blue", "blue"],
+      keywords: [
+        "blue colour",
+        "blue color",
+        "turns blue",
+        "iodine blue",
+        "blue",
+        "bluish",
+        "dark blue",
+        "navy blue",
+        "blue tint",
+        "blue shade",
+        "color changed blue",
+      ],
     },
     {
       id: "milk-4",
@@ -76,7 +256,19 @@ export const tests = {
       adulteratedResult: "Blue colour forms indicating starch presence.",
       healthRisk: "Starch adulteration in ghee reduces its nutritional quality and can cause digestive problems.",
       riskLevel: "Medium",
-      keywords: ["blue colour", "blue color", "turns blue", "blue"],
+      keywords: [
+        "blue colour",
+        "blue color",
+        "turns blue",
+        "iodine blue",
+        "blue",
+        "bluish",
+        "dark blue",
+        "navy blue",
+        "blue tint",
+        "blue shade",
+        "color changed blue",
+      ],
     },
   ],
 
@@ -96,7 +288,20 @@ export const tests = {
       adulteratedResult: "A liquid layer of other oils remains separate on top or bottom.",
       healthRisk: "Cheaper oils may contain trans fats or harmful substances leading to cardiovascular disease.",
       riskLevel: "Medium",
-      keywords: ["separate layer", "liquid layer", "does not solidify", "not solidified fully", "two layers"],
+      keywords: [
+        "separate layer",
+        "liquid layer",
+        "does not solidify",
+        "not solidified fully",
+        "two layers",
+        "double layer",
+        "split layer",
+        "upper layer",
+        "bottom layer",
+        "separated oil",
+        "layer visible",
+        "partial solid",
+      ],
     },
     {
       id: "oil-2",
@@ -112,7 +317,18 @@ export const tests = {
       adulteratedResult: "Immediate red colour formation indicates TOCP.",
       healthRisk: "TOCP is highly toxic. Causes paralysis, nerve damage, and serious neurological disorders. Can be fatal in high doses.",
       riskLevel: "Critical",
-      keywords: ["red colour", "red color", "turns red", "red"],
+      keywords: [
+        "red colour",
+        "red color",
+        "turns red",
+        "red",
+        "reddish",
+        "scarlet",
+        "red tint",
+        "instant red",
+        "became red",
+        "red shade",
+      ],
     },
     {
       id: "oil-3",
@@ -131,7 +347,18 @@ export const tests = {
       adulteratedResult: "Oil becomes turbid or cloudy — improperly winterized.",
       healthRisk: "Improperly winterized oil may contain saturated fats that can affect cardiovascular health.",
       riskLevel: "Low",
-      keywords: ["turbid", "cloudy", "not clear", "hazy", "white"],
+      keywords: [
+        "turbid",
+        "cloudy",
+        "not clear",
+        "hazy",
+        "white",
+        "murky",
+        "opaque",
+        "blurred",
+        "misty",
+        "unclear",
+      ],
     },
   ],
 
@@ -149,7 +376,21 @@ export const tests = {
       adulteratedResult: "Honey disperses in water. Does not burn or produces cracking sound.",
       healthRisk: "Sugar-adulterated honey spikes blood sugar levels rapidly, dangerous for diabetics. Reduces antioxidant and antibacterial properties.",
       riskLevel: "High",
-      keywords: ["disperses", "dissolves", "mixes", "does not burn", "cracking sound", "spreads"],
+      keywords: [
+        "disperses",
+        "dissolves",
+        "mixes",
+        "does not burn",
+        "cracking sound",
+        "spreads",
+        "blends in water",
+        "melts in water",
+        "mixed instantly",
+        "doesn't ignite",
+        "not burning",
+        "popping sound",
+        "crackle",
+      ],
     },
     {
       id: "sweet-2",
@@ -165,7 +406,18 @@ export const tests = {
       adulteratedResult: "White chalky sediment settles at the bottom.",
       healthRisk: "Chalk powder consumption can cause digestive issues, constipation, and long-term kidney damage.",
       riskLevel: "Medium",
-      keywords: ["sediment", "settles", "white residue", "chalky deposit", "bottom residue"],
+      keywords: [
+        "sediment",
+        "settles",
+        "white residue",
+        "chalky deposit",
+        "bottom residue",
+        "deposit",
+        "powder settled",
+        "particles settled",
+        "white layer bottom",
+        "settles down",
+      ],
     },
     {
       id: "sweet-3",
@@ -184,7 +436,18 @@ export const tests = {
       adulteratedResult: "Only breaks into shreds. Burns to grey ash.",
       healthRisk: "Aluminium consumption can cause neurological disorders, Alzheimer's disease risk, and kidney damage.",
       riskLevel: "High",
-      keywords: ["grey ash", "does not crumble", "shreds", "doesn't powder", "breaks into pieces"],
+      keywords: [
+        "grey ash",
+        "gray ash",
+        "does not crumble",
+        "shreds",
+        "doesn't powder",
+        "breaks into pieces",
+        "small shreds",
+        "ash remains",
+        "grey residue",
+        "not powdery",
+      ],
     },
   ],
 
@@ -203,7 +466,21 @@ export const tests = {
       adulteratedResult: "Visible presence of dust, pebbles, stones, weed seeds, insects or rodent matter.",
       healthRisk: "Can cause food poisoning, infections, choking hazards. Rodent excreta can spread Salmonella and Hantavirus.",
       riskLevel: "High",
-      keywords: ["pebbles", "stones", "insects", "dirt", "impurities", "foreign matter", "rodent"],
+      keywords: [
+        "pebbles",
+        "stones",
+        "insects",
+        "dirt",
+        "impurities",
+        "foreign matter",
+        "rodent",
+        "dust",
+        "straw",
+        "hair",
+        "waste",
+        "contamination",
+        "particles",
+      ],
     },
     {
       id: "cereal-2",
@@ -219,7 +496,15 @@ export const tests = {
       adulteratedResult: "Flat, edged, blackish-brown dhatura seeds visible among grains.",
       healthRisk: "Dhatura is highly toxic. Causes hallucinations, convulsions, coma, and can be fatal even in small quantities.",
       riskLevel: "Critical",
-      keywords: ["blackish brown seeds", "flat seeds", "dark seeds", "dhatura"],
+      keywords: [
+        "blackish brown seeds",
+        "flat seeds",
+        "dark seeds",
+        "dhatura",
+        "brown flat seeds",
+        "black seeds",
+        "edged dark seeds",
+      ],
     },
     {
       id: "cereal-3",
@@ -236,7 +521,15 @@ export const tests = {
       adulteratedResult: "Excess bran particles float on the water surface.",
       healthRisk: "Excess bran reduces flour quality. May cause digestive issues and reduces absorbability of minerals.",
       riskLevel: "Low",
-      keywords: ["bran floating", "particles floating", "floating material", "excess floating"],
+      keywords: [
+        "bran floating",
+        "particles floating",
+        "floating material",
+        "excess floating",
+        "surface particles",
+        "float on top",
+        "top floating layer",
+      ],
     },
     {
       id: "cereal-4",
@@ -253,7 +546,15 @@ export const tests = {
       adulteratedResult: "Edged, square-shaped khesari dal seeds visible.",
       healthRisk: "Lathyrism — a neurological disorder causing irreversible lower body paralysis. Especially dangerous for children and malnourished individuals.",
       riskLevel: "Critical",
-      keywords: ["edged seeds", "square seeds", "irregular shape", "different shape seeds"],
+      keywords: [
+        "edged seeds",
+        "square seeds",
+        "irregular shape",
+        "different shape seeds",
+        "slant seed",
+        "odd shaped dal",
+        "angular seeds",
+      ],
     },
     {
       id: "cereal-5",
@@ -270,7 +571,17 @@ export const tests = {
       adulteratedResult: "Water becomes coloured immediately.",
       healthRisk: "Artificial dyes can cause allergies, hyperactivity in children, cancer risk with long-term use.",
       riskLevel: "High",
-      keywords: ["colour in water", "water coloured", "dye released", "color change", "water turns"],
+      keywords: [
+        "colour in water",
+        "color in water",
+        "water coloured",
+        "dye released",
+        "color change",
+        "water turns",
+        "water became colored",
+        "color leaked",
+        "dye leak",
+      ],
     },
     {
       id: "cereal-6",
@@ -287,7 +598,15 @@ export const tests = {
       adulteratedResult: "Red colour forms indicating turmeric adulteration.",
       healthRisk: "While turmeric itself is harmless, artificially coloured rice may contain lead chromate (see Test 33) which is highly toxic.",
       riskLevel: "Medium",
-      keywords: ["red colour", "turns red", "red color"],
+      keywords: [
+        "red colour",
+        "red color",
+        "turns red",
+        "red",
+        "reddish",
+        "red tint",
+        "lime turns red",
+      ],
     },
     {
       id: "cereal-7",
@@ -303,7 +622,16 @@ export const tests = {
       adulteratedResult: "Cotton absorbs pink/red colour from ragi surface.",
       healthRisk: "Rhodamine B is a carcinogenic industrial dye. Causes liver, kidney damage, and is a known carcinogen.",
       riskLevel: "Critical",
-      keywords: ["cotton absorbs colour", "colour on cotton", "pink color", "dye transfer"],
+      keywords: [
+        "cotton absorbs colour",
+        "colour on cotton",
+        "pink color",
+        "pink colour",
+        "dye transfer",
+        "cotton colored",
+        "red on cotton",
+        "pink stain",
+      ],
     },
     {
       id: "cereal-8",
@@ -319,7 +647,14 @@ export const tests = {
       adulteratedResult: "Chakunda beans visible — identifiable by distinct shape and colour.",
       healthRisk: "Chakunda beans contain toxic compounds causing digestive problems, vomiting, and liver damage.",
       riskLevel: "High",
-      keywords: ["foreign beans", "different seeds", "unusual seeds"],
+      keywords: [
+        "foreign beans",
+        "different seeds",
+        "unusual seeds",
+        "odd beans",
+        "mixed beans",
+        "shape mismatch",
+      ],
     },
     {
       id: "cereal-9",
@@ -333,7 +668,18 @@ export const tests = {
       adulteratedResult: "Sand, soil, insects, webs, lumps, or rodent hair visible.",
       healthRisk: "Causes food poisoning, intestinal damage, allergic reactions. Rodent contamination can spread serious diseases.",
       riskLevel: "High",
-      keywords: ["sand", "soil", "insects", "lumps", "webs", "dirty", "gritty"],
+      keywords: [
+        "sand",
+        "soil",
+        "insects",
+        "webs",
+        "lumps",
+        "rodent hair",
+        "dust",
+        "worms",
+        "foreign particles",
+        "dirty flour",
+      ],
     },
   ],
 
@@ -749,3 +1095,47 @@ export const getAllTests = () => Object.values(tests).flat();
 export const getTestById = (id) => getAllTests().find(t => t.id === id);
 
 export const getCategoryById = (id) => categories.find(c => c.id === id);
+
+export const searchAdulteration = (query = "", testsToSearch = tests) => {
+  if (!query || !String(query).trim()) return [];
+
+  return detectAdulteration(query, testsToSearch);
+};
+
+export const getBestMatch = (query = "", testsToSearch = tests) => {
+  const matches = detectAdulteration(query, testsToSearch);
+  return matches.length ? matches[0] : null;
+};
+
+export const explainMatch = (query = "", testsToSearch = tests) => {
+  const best = getBestMatch(query, testsToSearch);
+
+  if (!best) {
+    return {
+      found: false,
+      message: "No adulteration pattern matched from input.",
+    };
+  }
+
+  return {
+    found: true,
+    testId: best.id,
+    adulterant: best.adulterant,
+    confidence: best.confidence,
+    riskLevel: best.riskLevel,
+    healthRisk: best.healthRisk,
+    message: `${best.adulterant} detected with ${best.confidence}% confidence`,
+  };
+};
+
+export const suggestSymptoms = (testsToSearch = tests) => {
+  const set = new Set();
+
+  Object.values(testsToSearch)
+    .flat()
+    .forEach((test) => {
+      (test.keywords || []).forEach((k) => set.add(k));
+    });
+
+  return [...set].sort();
+};
