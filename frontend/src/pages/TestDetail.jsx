@@ -3,7 +3,7 @@ import { useState } from "react";
 import { getTestById, categories, tests as allTests } from "../data/dartTests";
 import axios from "axios";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 const riskConfig = {
   Safe: { bg: "bg-green-50", border: "border-green-300", text: "text-green-800", badge: "bg-green-100 text-green-800", icon: "✅" },

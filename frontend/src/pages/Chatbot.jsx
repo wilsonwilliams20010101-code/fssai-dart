@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 const STATIC_RESPONSES = {
   "what is dart": "🧪 **DART (Detect Adulteration with Rapid Test)** is an official manual by FSSAI containing 44 simple tests to detect food adulteration at home using common household items.",
