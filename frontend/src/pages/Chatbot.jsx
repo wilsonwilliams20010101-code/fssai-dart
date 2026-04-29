@@ -98,10 +98,12 @@ export default function Chatbot() {
           <span className={`inline-block mt-2 text-xs px-3 py-1 rounded-full ${
             apiMode === "anthropic_ai" ? "bg-green-100 text-green-700" :
             apiMode === "offline" ? "bg-gray-100 text-gray-600" :
+            apiMode === "dataset_agent" ? "bg-green-100 text-green-700" :
             "bg-yellow-100 text-yellow-700"
           }`}>
             {apiMode === "anthropic_ai" ? "🟢 Claude AI Active" :
              apiMode === "offline" ? "🔴 Offline Mode" :
+             apiMode === "dataset_agent" ? "Dataset Agent Active" :
              "🟡 Static Mode"}
           </span>
         )}
@@ -133,7 +135,7 @@ export default function Chatbot() {
                 )}
                 {msg.mode && msg.role === "assistant" && (
                   <div className={`text-xs mt-1 ${msg.role === "user" ? "text-green-200" : "text-gray-400"}`}>
-                    {msg.mode === "ai" ? "🤖 Claude AI" : msg.mode === "offline" ? "📋 Offline" : "📋 Static"}
+                    {msg.mode === "ai" ? "🤖 Claude AI" : msg.mode === "dataset_agent" ? "Dataset Agent" : msg.mode === "offline" ? "📋 Offline" : "📋 Static"}
                   </div>
                 )}
               </div>

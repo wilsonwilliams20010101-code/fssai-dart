@@ -14,6 +14,7 @@ The logic is intentionally rule-based and dependency-light for easy deployment.
 from __future__ import annotations
 
 import json
+import csv
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -21,6 +22,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_PATH = BASE_DIR / "dart_knowledge.json"
+DATASET_PATH = BASE_DIR / "dart_dataset.csv"
 
 GENERAL_CONTACTS = (
     "📞 FSSAI contacts:\n"
@@ -98,6 +100,18 @@ INTENT_HINTS = {
     "contact": ["report", "complaint", "contact", "helpline", "whatsapp", "email"],
 }
 
+OBSERVATION_HINTS = {
+    "turned", "turns", "became", "becomes", "formed", "forms", "appeared",
+    "settled", "settles", "sank", "sinks", "floating", "floats", "foam",
+    "lather", "layer", "stain", "stains", "residue", "colour", "color",
+    "smell", "trail", "mark", "magnet", "particles",
+}
+
+FOLLOW_UP_HINTS = {
+    "it", "this", "that", "these", "those", "same", "risk", "health",
+    "dangerous", "safe", "steps", "procedure", "result", "report",
+}
+
 @lru_cache(maxsize=1)
 def load_data() -> Dict[str, Any]:
     with DATA_PATH.open("r", encoding="utf-8") as f:
@@ -132,6 +146,45 @@ def norm(text: str) -> str:
 def tokenize(text: str) -> List[str]:
     return [t for t in norm(text).split() if t]
 
+
+@lru_cache(maxsize=1)
+def load_dataset_examples() -> List[Dict[str, Any]]:
+    if not DATASET_PATH.exists():
+        return []
+
+    examples: List[Dict[str, Any]] = []
+    with DATASET_PATH.open("r", encoding="utf-8", newline="") as f:
+        for row in csv.DictReader(f):
+            text = row.get("text", "")
+            label = row.get("label", "")
+            if not text or label not in TEST_BY_ID:
+                continue
+            tokens = set(tokenize(text))
+            if tokens:
+                examples.append({"text": text, "label": label, "tokens": tokens})
+    return examples
+
+
+def dataset_label_scores(message: str) -> Dict[str, int]:
+    msg_tokens = set(tokenize(message))
+    if not msg_tokens:
+        return {}
+
+    scores: Dict[str, int] = {}
+    for example in load_dataset_examples():
+        overlap = msg_tokens & example["tokens"]
+        if not overlap:
+            continue
+
+        union_size = len(msg_tokens | example["tokens"])
+        similarity = len(overlap) / union_size if union_size else 0
+        if similarity < 0.18 and len(overlap) < 2:
+            continue
+
+        label = example["label"]
+        scores[label] = scores.get(label, 0) + int(8 + similarity * 35 + len(overlap) * 2)
+    return scores
+
 def fuzzy_phrase_match(phrase: str, text: str) -> bool:
     phrase_tokens = [t for t in tokenize(phrase) if len(t) > 2]
     text_tokens = tokenize(text)
@@ -158,6 +211,40 @@ def find_intent(message: str) -> str:
     if "pure" in msg or "adulterated" in msg:
         return "results"
     return "summary"
+
+
+def is_greeting(message: str) -> bool:
+    msg = norm(message)
+    return msg in {"hi", "hello", "hey", "namaste", "good morning", "good evening"}
+
+
+def is_observation(message: str) -> bool:
+    tokens = set(tokenize(message))
+    return bool(tokens & OBSERVATION_HINTS)
+
+
+def is_follow_up(message: str) -> bool:
+    tokens = set(tokenize(message))
+    return len(tokens) <= 8 and bool(tokens & FOLLOW_UP_HINTS)
+
+
+def context_test_from_history(history: Optional[List[Dict[str, Any]]]) -> Optional[Dict[str, Any]]:
+    if not history:
+        return None
+
+    for item in reversed(history[-8:]):
+        content = str(item.get("content", ""))
+        match = re.search(r"\btest\s+(\d{1,2})\b", content, flags=re.IGNORECASE)
+        if match:
+            test = TEST_BY_NUMBER.get(int(match.group(1)))
+            if test:
+                return test
+
+        test = find_best_test(content)
+        if test:
+            return test
+
+    return None
 
 
 def detect_category(message: str) -> Optional[str]:
@@ -209,12 +296,26 @@ def score_test(test: Dict[str, Any], message: str) -> int:
 
 
 def find_best_test(message: str) -> Optional[Dict[str, Any]]:
-    candidates = [(score_test(test, message), test) for test in ALL_TESTS]
+    dataset_scores = dataset_label_scores(message)
+    candidates = [
+        (score_test(test, message) + min(dataset_scores.get(test["id"], 0), 70), test)
+        for test in ALL_TESTS
+    ]
     candidates.sort(key=lambda x: (x[0], -x[1]["testNo"]), reverse=True)
     best_score, best_test = candidates[0]
     if best_score < 20:
         return None
     return best_test
+
+
+def find_ranked_tests(message: str, limit: int = 4) -> List[Tuple[int, Dict[str, Any]]]:
+    dataset_scores = dataset_label_scores(message)
+    candidates = [
+        (score_test(test, message) + min(dataset_scores.get(test["id"], 0), 70), test)
+        for test in ALL_TESTS
+    ]
+    candidates.sort(key=lambda x: (x[0], -x[1]["testNo"]), reverse=True)
+    return [(score, test) for score, test in candidates[:limit] if score >= 20]
 
 
 def list_tests_for_category(category_id: str) -> str:
@@ -286,6 +387,65 @@ def answer_for_test(test: Dict[str, Any], message: str) -> Dict[str, Any]:
     }
 
 
+def answer_for_test_agent(test: Dict[str, Any], message: str) -> Dict[str, Any]:
+    intent = find_intent(message)
+    category = test.get("category_name", "Unknown category")
+    intro = f"I found the closest DART match: **Test {test['testNo']} - {test['name']}** in **{category}**."
+
+    if intent == "procedure":
+        procedure = "\n".join(f"{i+1}. {step}" for i, step in enumerate(test.get("procedure", [])))
+        response = (
+            f"{intro}\n\n"
+            "Here is the test procedure:\n"
+            f"{procedure}\n\n"
+            "After you perform it, tell me exactly what you saw: colour change, layer, residue, foam, floating/sinking, or magnet response."
+        )
+    elif intent == "results":
+        response = (
+            f"{intro}\n\n"
+            f"**If the sample is pure:** {test.get('pureResult', 'Not provided')}\n"
+            f"**If adulterated:** {test.get('adulteratedResult', 'Not provided')}\n\n"
+            "If you tell me your actual observation, I can interpret it against these two outcomes."
+        )
+    elif intent == "health":
+        response = (
+            f"{intro}\n\n"
+            f"**Risk level:** {test.get('riskLevel', 'Unknown')}\n"
+            f"**Health concern:** {test.get('healthRisk', 'Not provided')}\n\n"
+            "If the test result matches the adulterated pattern, avoid consuming the sample and report it to FSSAI."
+        )
+    elif is_observation(message):
+        response = (
+            f"{intro}\n\n"
+            f"Your observation may relate to **{test.get('adulterant', 'an adulterant')}**.\n"
+            f"**Adulterated pattern:** {test.get('adulteratedResult', 'Not provided')}\n"
+            f"**Pure pattern:** {test.get('pureResult', 'Not provided')}\n\n"
+            "To be more certain, tell me the food item and whether this was exactly after following the DART steps."
+        )
+    else:
+        response = (
+            f"{intro}\n\n"
+            f"It checks for **{test.get('adulterant', 'unknown adulterant')}**.\n"
+            f"**Pure result:** {test.get('pureResult', 'Not provided')}\n"
+            f"**Adulterated result:** {test.get('adulteratedResult', 'Not provided')}\n"
+            f"**Risk level:** {test.get('riskLevel', 'Unknown')}\n\n"
+            "You can ask me for the steps, health risk, or paste your observation and I will interpret it."
+        )
+
+    keywords = test.get("keywords", [])
+    if keywords:
+        response += "\n\nClues I can recognize: " + ", ".join(keywords[:5])
+
+    return {
+        "response": response,
+        "mode": "dataset_agent",
+        "test_id": test["id"],
+        "test_no": test["testNo"],
+        "category": category,
+        "full": test,
+    }
+
+
 def answer_general(message: str) -> Optional[Dict[str, Any]]:
     msg = norm(message)
 
@@ -306,7 +466,7 @@ def answer_general(message: str) -> Optional[Dict[str, Any]]:
     if category_id:
         # If the user mentions a category but not a specific test, return the category's test list.
         if any(h in msg for h in ("all", "list", "show", "every", "full", "how to", "steps", "test")):
-            return {"response": list_tests_for_category(category_id), "mode": "offline"}
+            return {"response": list_tests_for_category(category_id), "mode": "dataset_agent", "_category_fallback": True}
         category = CATEGORY_BY_ID.get(category_id)
         if category:
             items = [t for t in ALL_TESTS if t["category_id"] == category_id]
@@ -318,22 +478,66 @@ def answer_general(message: str) -> Optional[Dict[str, Any]]:
                     f"Top tests:\n{preview}\n\n"
                     f"Ask me for a test number or exact item name and I will explain the steps."
                 ),
-                "mode": "offline",
+                "mode": "dataset_agent",
+                "_category_fallback": True,
             }
 
     return None
 
 
-def answer_message(message: str) -> Dict[str, Any]:
+def answer_message(message: str, history: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+    if is_greeting(message):
+        return {
+            "response": (
+                "Hi, I am your FSSAI DART assistant. Tell me the food item and what you observed, "
+                "or ask for a test procedure. For example: **milk formed dense lather**, "
+                "**turmeric released strong yellow colour**, or **how do I test coffee?**"
+            ),
+            "mode": "dataset_agent",
+        }
+
+    context_test = context_test_from_history(history)
+    if context_test and is_follow_up(message) and not is_observation(message):
+        return answer_for_test_agent(context_test, message)
+
     general = answer_general(message)
-    if general:
+    if general and not general.get("_category_fallback"):
         return general
+
+    ranked = find_ranked_tests(message)
+    if is_observation(message) and len(ranked) > 1 and ranked[0][0] - ranked[1][0] <= 12:
+        options = "\n".join(
+            f"- Test {test['testNo']}: {test['name']} ({test.get('category_name', 'Unknown')})"
+            for _, test in ranked[:3]
+        )
+        return {
+            "response": (
+                "I can interpret that, but the observation could fit more than one DART test.\n\n"
+                f"Closest matches:\n{options}\n\n"
+                "Tell me the food item and the exact step you performed, and I will narrow it down."
+            ),
+            "mode": "dataset_agent",
+        }
 
     test = find_best_test(message)
     if test:
-        return answer_for_test(test, message)
+        return answer_for_test_agent(test, message)
 
-    return {"response": DEFAULT_RESPONSE["explanation"], "mode": "offline"}
+    if general:
+        general.pop("_category_fallback", None)
+        return general
+
+    return {
+        "response": (
+            "I want to help, but I need one more detail.\n\n"
+            "Please mention either:\n"
+            "- the food item, like milk, turmeric, coffee, tea, honey, oil, dal\n"
+            "- the observation, like blue colour, dense lather, powder sinking, red stain, separate layer\n"
+            "- or the test number/name\n\n"
+            "Then I can match it to the DART dataset and guide you step by step."
+        ),
+        "mode": "dataset_agent",
+    }
 
 
 def analyze_observation(test_id: Optional[str], observation: str, test_name: str = "", category: str = "", food_item: str = "") -> Dict[str, Any]:
@@ -400,7 +604,7 @@ def get_static_response(test_id: str, message: str) -> Dict[str, Any]:
     if not test:
         # Fall back to a message-level match
         return answer_message(message)
-    return answer_for_test(test, message)
+    return answer_for_test_agent(test, message)
 
 
 def get_test_by_id(test_id: str) -> Optional[Dict[str, Any]]:
@@ -413,3 +617,11 @@ def get_all_tests() -> List[Dict[str, Any]]:
 
 def get_category_by_id(category_id: str) -> Optional[Dict[str, Any]]:
     return CATEGORY_BY_ID.get(category_id)
+
+
+def get_dataset_stats() -> Dict[str, int]:
+    return {
+        "categories": len(CATEGORY_BY_ID),
+        "tests": len(ALL_TESTS),
+        "training_examples": len(load_dataset_examples()),
+    }

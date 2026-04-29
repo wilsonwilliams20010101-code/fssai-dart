@@ -6,12 +6,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
-from backend.static_responses import (
-    DEFAULT_RESPONSE,
-    answer_message,
-    analyze_observation,
-    get_static_response,
-)
+try:
+    from backend.static_responses import (
+        DEFAULT_RESPONSE,
+        answer_message,
+        analyze_observation,
+        get_dataset_stats,
+        get_static_response,
+    )
+except ModuleNotFoundError:
+    from static_responses import (
+        DEFAULT_RESPONSE,
+        answer_message,
+        analyze_observation,
+        get_dataset_stats,
+        get_static_response,
+    )
 
 app = FastAPI(title="FSSAI DART API", version="4.0.0")
 
@@ -36,7 +46,7 @@ class AnalyzeRequest(BaseModel):
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
-    result = answer_message(req.message)
+    result = answer_message(req.message, req.history or [])
     return {
         "response": result.get("response", DEFAULT_RESPONSE["explanation"]),
         "mode": result.get("mode", "offline"),
@@ -56,7 +66,7 @@ async def analyze(req: AnalyzeRequest):
 
 @app.get("/health")
 def health():
-    return {"mode": "offline_static", "status": "ok"}
+    return {"mode": "offline_static", "status": "ok", "data": get_dataset_stats()}
 
 if __name__ == "__main__":
     import uvicorn

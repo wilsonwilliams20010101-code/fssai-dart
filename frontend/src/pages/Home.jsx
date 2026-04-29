@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import HomeAssistant from "../components/HomeAssistant";
 
 export default function Home() {
   const cards = [
@@ -118,6 +119,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <HomeAssistant />
 
       {/* Emergency Contact */}
       <div style={{ background: "#fef2f2", borderTop: "3px solid #ef4444" }} className="py-10 px-4 text-center">
