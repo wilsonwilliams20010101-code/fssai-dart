@@ -145,6 +145,7 @@ export const tests = {
   "milk-dairy": [
     {
       id: "milk-1",
+      environment: "Home",
       testNo: 1,
       name: "Detection of Water in Milk",
       adulterant: "Water",
@@ -313,6 +314,7 @@ export const tests = {
     },
     {
       id: "milk-2",
+      environment: "Home",
       testNo: 2,
       name: "Detection of Detergent in Milk",
       adulterant: "Detergent",
@@ -580,6 +582,7 @@ export const tests = {
     },
     {
       id: "milk-3",
+      environment: "Lab",
       testNo: 3,
       name: "Detection of Starch in Milk / Khoya / Chenna / Paneer",
       adulterant: "Starch",
@@ -839,6 +842,7 @@ export const tests = {
     },
     {
       id: "milk-4",
+      environment: "Lab",
       testNo: 4,
       name: "Detection of Mashed Potatoes / Starches in Ghee / Butter",
       adulterant: "Mashed potatoes, sweet potatoes, starch",
@@ -970,6 +974,7 @@ export const tests = {
   "oils-fats": [
     {
       id: "oil-1",
+      environment: "Home",
       testNo: 5,
       name: "Detection of Other Oils in Coconut Oil",
       adulterant: "Other vegetable oils",
@@ -1100,6 +1105,7 @@ export const tests = {
     },
     {
       id: "oil-2",
+      environment: "Home",
       testNo: 6,
       name: "Detection of TOCP (Tri-Ortho-Cresyl-Phosphate) in Oils",
       adulterant: "TOCP (industrial lubricant)",
@@ -1227,6 +1233,7 @@ export const tests = {
     },
     {
       id: "oil-3",
+      environment: "Home",
       testNo: 7,
       name: "Proper Winterization of Refined Salad Oils",
       adulterant: "Improper winterization",
@@ -1359,6 +1366,7 @@ export const tests = {
   "sweets-sugar": [
     {
       id: "sweet-1",
+      environment: "Home",
       testNo: 8,
       name: "Detection of Sugar Solution in Honey",
       adulterant: "Sugar syrup / added sugar",
@@ -1486,6 +1494,7 @@ export const tests = {
     },
     {
       id: "sweet-2",
+      environment: "Home",
       testNo: 9,
       name: "Detection of Chalk Powder in Sugar / Jaggery",
       adulterant: "Chalk powder",
@@ -1611,6 +1620,7 @@ export const tests = {
     },
     {
       id: "sweet-3",
+      environment: "Home",
       testNo: 10,
       name: "Detection of Aluminium Leaves in Silver Leaves (Vark)",
       adulterant: "Aluminium foil",
@@ -1742,6 +1752,7 @@ export const tests = {
   "cereals-pulses": [
     {
       id: "cereal-1",
+      environment: "Home",
       testNo: 11,
       name: "Detection of Extraneous Matter in Food Grains",
       adulterant: "Dust, pebbles, stones, straw, weed seeds, insects, rodent hair",
@@ -1872,6 +1883,7 @@ export const tests = {
     },
     {
       id: "cereal-2",
+      environment: "Home",
       testNo: 12,
       name: "Detection of Dhatura in Food Grains",
       adulterant: "Dhatura seeds (poisonous)",
@@ -1994,6 +2006,7 @@ export const tests = {
     },
     {
       id: "cereal-3",
+      environment: "Home",
       testNo: 13,
       name: "Detection of Excess Bran in Wheat Flour",
       adulterant: "Excess bran",
@@ -2116,6 +2129,7 @@ export const tests = {
     },
     {
       id: "cereal-4",
+      environment: "Home",
       testNo: 14,
       name: "Detection of Khesari Dal in Dal",
       adulterant: "Khesari dal (Lathyrus sativus)",
@@ -2237,6 +2251,7 @@ export const tests = {
     },
     {
       id: "cereal-5",
+      environment: "Home",
       testNo: 15,
       name: "Detection of Added Colour in Food Grains",
       adulterant: "Artificial food colour",
@@ -2361,6 +2376,7 @@ export const tests = {
     },
     {
       id: "cereal-6",
+      environment: "Home",
       testNo: 16,
       name: "Detection of Turmeric in Sella Rice",
       adulterant: "Turmeric (for artificial colouring)",
@@ -2482,6 +2498,7 @@ export const tests = {
     },
     {
       id: "cereal-7",
+      environment: "Home",
       testNo: 17,
       name: "Detection of Rhodamine B in Ragi",
       adulterant: "Rhodamine B dye",
@@ -2600,6 +2617,7 @@ export const tests = {
     },
     {
       id: "cereal-8",
+      environment: "Home",
       testNo: 18,
       name: "Detection of Chakunda Beans in Pulses",
       adulterant: "Chakunda beans",
@@ -2719,6 +2737,7 @@ export const tests = {
     },
     {
       id: "cereal-9",
+      environment: "Home",
       testNo: 19,
       name: "Detection of Sand/Soil/Insects in Atta/Maida/Suji",
       adulterant: "Sand, soil, insects, webs, lumps, rodent hair",
@@ -2842,6 +2861,7 @@ export const tests = {
   "spices": [
     {
       id: "spice-1",
+      environment: "Home",
       testNo: 20,
       name: "Detection of Foreign Resin in Asafoetida (Hing)",
       adulterant: "Non-edible gum/resin",
@@ -2908,6 +2928,7 @@ export const tests = {
     },
     {
       id: "spice-2",
+      environment: "Home",
       testNo: 21,
       name: "Detection of Papaya Seeds in Black Pepper",
       adulterant: "Papaya seeds",
@@ -3013,6 +3034,7 @@ export const tests = {
     },
     {
       id: "spice-3",
+      environment: "Home",
       testNo: 22,
       name: "Detection of Light Black Berries in Black Pepper",
       adulterant: "Light black berries",
@@ -3127,6 +3149,7 @@ export const tests = {
     },
     {
       id: "spice-4",
+      environment: "Home",
       testNo: 23,
       name: "Detection of Soap Stone in Asafoetida (Hing)",
       adulterant: "Soap stone / earthy matter",
@@ -3194,6 +3217,7 @@ export const tests = {
     },
     {
       id: "spice-5",
+      environment: "Home",
       testNo: 24,
       name: "Detection of Artificial Colours in Chilli Powder",
       adulterant: "Water-soluble synthetic colours",
@@ -3304,6 +3328,7 @@ export const tests = {
     },
     {
       id: "spice-6",
+      environment: "Home",
       testNo: 25,
       name: "Detection of Light Black Berries in Black Pepper (Alcohol Method)",
       adulterant: "Light black berries",
@@ -3381,6 +3406,7 @@ export const tests = {
     },
     {
       id: "spice-7",
+      environment: "Home",
       testNo: 26,
       name: "Detection of Saw Dust in Chilli Powder",
       adulterant: "Saw dust",
@@ -3492,6 +3518,7 @@ export const tests = {
     },
     {
       id: "spice-8",
+      environment: "Lab",
       testNo: 27,
       name: "Detection of Starch in Asafoetida (Hing)",
       adulterant: "Starch",
@@ -3603,6 +3630,7 @@ export const tests = {
     },
     {
       id: "spice-9",
+      environment: "Home",
       testNo: 28,
       name: "Detection of Chalk in Common Salt",
       adulterant: "Chalk powder",
@@ -3711,6 +3739,7 @@ export const tests = {
     },
     {
       id: "spice-10",
+      environment: "Home",
       testNo: 29,
       name: "Detection of Exhausted Cloves in Cloves",
       adulterant: "Exhausted (volatile oil extracted) cloves",
@@ -3820,6 +3849,7 @@ export const tests = {
     },
     {
       id: "spice-11",
+      environment: "Home",
       testNo: 30,
       name: "Detection of Cassia Bark in Cinnamon",
       adulterant: "Cassia bark",
@@ -3932,6 +3962,7 @@ export const tests = {
     },
     {
       id: "spice-12",
+      environment: "Home",
       testNo: 31,
       name: "Detection of Charcoal-Coloured Grass Seeds in Cumin",
       adulterant: "Grass seeds coloured with charcoal dust",
@@ -3998,6 +4029,7 @@ export const tests = {
     },
     {
       id: "spice-13",
+      environment: "Home",
       testNo: 32,
       name: "Detection of Argemone Seeds in Mustard Seeds",
       adulterant: "Argemone seeds",
@@ -4110,6 +4142,7 @@ export const tests = {
     },
     {
       id: "spice-14",
+      environment: "Home",
       testNo: 33,
       name: "Detection of Lead Chromate in Turmeric Whole",
       adulterant: "Lead chromate",
@@ -4219,6 +4252,7 @@ export const tests = {
     },
     {
       id: "spice-15",
+      environment: "Home",
       testNo: 34,
       name: "Detection of Artificial Colour in Turmeric Powder",
       adulterant: "Artificial yellow colour (metanil yellow etc.)",
@@ -4327,6 +4361,7 @@ export const tests = {
     },
     {
       id: "spice-16",
+      environment: "Home",
       testNo: 35,
       name: "Detection of Sawdust / Powdered Bran in Spices",
       adulterant: "Sawdust, powdered bran",
@@ -4346,6 +4381,7 @@ export const tests = {
   "vegetables-fruits": [
     {
       id: "veg-1",
+      environment: "Lab",
       testNo: 36,
       name: "Differentiation of Common Salt and Iodised Salt",
       adulterant: "Absence of iodine (non-iodised salt sold as iodised)",
@@ -4458,6 +4494,7 @@ export const tests = {
     },
     {
       id: "veg-2",
+      environment: "Home",
       testNo: 37,
       name: "Detection of Coloured Maize Cob Tendrils in Saffron",
       adulterant: "Dried maize cob tendrils soaked in sugar and coal tar colour",
@@ -4526,6 +4563,7 @@ export const tests = {
     },
     {
       id: "veg-3",
+      environment: "Home",
       testNo: 38,
       name: "Detection of Malachite Green in Green Vegetables",
       adulterant: "Malachite green dye",
@@ -4592,6 +4630,7 @@ export const tests = {
     },
     {
       id: "veg-4",
+      environment: "Home",
       testNo: 39,
       name: "Detection of Artificial Colour on Green Peas",
       adulterant: "Artificial green colour",
@@ -4660,6 +4699,7 @@ export const tests = {
     },
     {
       id: "veg-5",
+      environment: "Home",
       testNo: 40,
       name: "Detection of Rhodamine B in Sweet Potato",
       adulterant: "Rhodamine B dye",
@@ -4730,6 +4770,7 @@ export const tests = {
   "beverages": [
     {
       id: "bev-1",
+      environment: "Home",
       testNo: 41,
       name: "Detection of Clay in Coffee Powder",
       adulterant: "Clay particles",
@@ -4799,6 +4840,7 @@ export const tests = {
     },
     {
       id: "bev-2",
+      environment: "Home",
       testNo: 42,
       name: "Detection of Chicory Powder in Coffee Powder",
       adulterant: "Chicory powder",
@@ -4815,6 +4857,7 @@ export const tests = {
     },
     {
       id: "bev-3",
+      environment: "Home",
       testNo: 43,
       name: "Detection of Exhausted Tea in Tea Leaves",
       adulterant: "Exhausted/used tea leaves, coal tar colour",
@@ -4882,6 +4925,7 @@ export const tests = {
     },
     {
       id: "bev-4",
+      environment: "Home",
       testNo: 44,
       name: "Detection of Iron Filings in Tea Leaves",
       adulterant: "Iron filings (metallic)",

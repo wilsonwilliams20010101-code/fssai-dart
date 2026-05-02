@@ -7,6 +7,12 @@ from pydantic import BaseModel
 from typing import Optional
 
 try:
+    from backend.gemini_ai import is_gemini_configured, call_gemini_chat, analyze_observation_gemini
+except ModuleNotFoundError:
+    from gemini_ai import is_gemini_configured, call_gemini_chat, analyze_observation_gemini
+
+
+try:
     from backend.static_responses import (
         DEFAULT_RESPONSE,
         answer_message,
@@ -46,6 +52,12 @@ class AnalyzeRequest(BaseModel):
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
+    if is_gemini_configured():
+        ai_result = call_gemini_chat(req.message, req.history or [])
+        if ai_result:
+            return ai_result
+
+    # Fallback to static responses if Gemini fails or is not configured
     result = answer_message(req.message, req.history or [])
     return {
         "response": result.get("response", DEFAULT_RESPONSE["explanation"]),
@@ -55,6 +67,18 @@ async def chat(req: ChatRequest):
 
 @app.post("/analyze")
 async def analyze(req: AnalyzeRequest):
+    if is_gemini_configured():
+        ai_result = analyze_observation_gemini(
+            observation=req.observation,
+            test_id=req.test_id,
+            test_name=req.test_name or "",
+            category=req.category or "",
+            food_item=req.food_item or ""
+        )
+        if ai_result:
+            return ai_result
+
+    # Fallback to static responses
     result = analyze_observation(
         test_id=req.test_id,
         observation=req.observation,
@@ -66,7 +90,8 @@ async def analyze(req: AnalyzeRequest):
 
 @app.get("/health")
 def health():
-    return {"mode": "offline_static", "status": "ok", "data": get_dataset_stats()}
+    mode = "gemini_ai" if is_gemini_configured() else "offline_static"
+    return {"mode": mode, "status": "ok", "data": get_dataset_stats()}
 
 if __name__ == "__main__":
     import uvicorn

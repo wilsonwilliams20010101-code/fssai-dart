@@ -76,6 +76,9 @@ export default function TestList() {
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${riskColors[risk]}`}>
                     {risk === "Critical" ? "🚨 " : risk === "High" ? "⚠️ " : ""}Risk: {risk}
                   </span>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${test.environment === "Lab" ? "bg-purple-100 text-purple-800" : "bg-teal-100 text-teal-800"}`}>
+                    {test.environment === "Lab" ? "🧪 Lab" : "🏠 Home"}
+                  </span>
                 </div>
               </div>
 

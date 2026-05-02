@@ -94,12 +94,15 @@ export default function TestDetail() {
         <div className="md:col-span-2 space-y-5">
           {/* Test Header */}
           <div className="bg-white rounded-xl shadow border border-gray-100 p-6">
-            <div className="flex items-start gap-3 mb-4">
+            <div className="flex flex-wrap items-center gap-3 mb-4">
               <span className="text-sm font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded whitespace-nowrap">
                 TEST {test.testNo}
               </span>
               <span className={`text-xs font-semibold px-2 py-1 rounded-full ${rc.badge}`}>
                 {rc.icon} Risk: {risk}
+              </span>
+              <span className={`text-xs font-semibold px-2 py-1 rounded ${test.environment === "Lab" ? "bg-purple-100 text-purple-800" : "bg-teal-100 text-teal-800"}`}>
+                {test.environment === "Lab" ? "🧪 Lab Test" : "🏠 Home Test"}
               </span>
             </div>
             <h1 className="text-2xl font-bold text-gray-800 mb-2">{test.name}</h1>
@@ -185,7 +188,7 @@ export default function TestDetail() {
                   <h2 className={`text-xl font-bold ${resultRc?.text || "text-gray-800"}`}>{result.result}</h2>
                   {result.mode && (
                     <span className="text-xs text-gray-400">
-                      {result.mode === "ai" ? "🤖 AI Analysis" : result.mode === "static" ? "📋 Rule-based" : "Analysis"}
+                      {result.mode === "gemini_ai" ? "🤖 Gemini AI Analysis" : result.mode === "static" ? "📋 Rule-based" : "Analysis"}
                     </span>
                   )}
                 </div>
