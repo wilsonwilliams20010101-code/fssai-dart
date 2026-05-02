@@ -3,7 +3,7 @@
     {
       "id": "milk-dairy",
       "name": "Milk & Dairy",
-      "icon": "🥛",
+      "icon": "\ud83e\udd5b",
       "color": "#e3f2fd",
       "accent": "#1565c0",
       "description": "Milk, ghee, butter, paneer, khoya, chenna"
@@ -11,7 +11,7 @@
     {
       "id": "oils-fats",
       "name": "Oils & Fats",
-      "icon": "🫙",
+      "icon": "\ud83e\uded9",
       "color": "#fff8e1",
       "accent": "#f57f17",
       "description": "Coconut oil, edible oils, refined oils"
@@ -19,7 +19,7 @@
     {
       "id": "sweets-sugar",
       "name": "Sweets & Sugar",
-      "icon": "🍯",
+      "icon": "\ud83c\udf6f",
       "color": "#fce4ec",
       "accent": "#880e4f",
       "description": "Honey, sugar, jaggery, silver leaves"
@@ -27,7 +27,7 @@
     {
       "id": "cereals-pulses",
       "name": "Cereals & Pulses",
-      "icon": "🌾",
+      "icon": "\ud83c\udf3e",
       "color": "#e8f5e9",
       "accent": "#1b5e20",
       "description": "Rice, wheat, dal, atta, maida, ragi"
@@ -35,7 +35,7 @@
     {
       "id": "spices",
       "name": "Spices",
-      "icon": "🌶️",
+      "icon": "\ud83c\udf36\ufe0f",
       "color": "#fff3e0",
       "accent": "#bf360c",
       "description": "Chilli, turmeric, pepper, cumin, saffron, hing"
@@ -43,7 +43,7 @@
     {
       "id": "vegetables-fruits",
       "name": "Vegetables & Fruits",
-      "icon": "🥦",
+      "icon": "\ud83e\udd66",
       "color": "#f3e5f5",
       "accent": "#4a148c",
       "description": "Green vegetables, green peas, sweet potato"
@@ -51,7 +51,7 @@
     {
       "id": "beverages",
       "name": "Beverages",
-      "icon": "☕",
+      "icon": "\u2615",
       "color": "#efebe9",
       "accent": "#3e2723",
       "description": "Coffee powder, tea leaves"
@@ -80,7 +80,8 @@
           "no trail",
           "flows fast",
           "water mark"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "milk-2",
@@ -103,7 +104,8 @@
           "foam formed",
           "lather",
           "bubbles"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "milk-3",
@@ -127,7 +129,8 @@
           "turns blue",
           "iodine blue",
           "blue"
-        ]
+        ],
+        "environment": "Lab"
       },
       {
         "id": "milk-4",
@@ -135,7 +138,7 @@
         "name": "Detection of Mashed Potatoes / Starches in Ghee / Butter",
         "adulterant": "Mashed potatoes, sweet potatoes, starch",
         "procedure": [
-          "Take ½ teaspoon of ghee/butter in a transparent glass bowl.",
+          "Take \u00bd teaspoon of ghee/butter in a transparent glass bowl.",
           "Add 2-3 drops of tincture of iodine.",
           "Formation of blue colour indicates the presence of mashed potatoes, sweet potatoes or other starches."
         ],
@@ -148,7 +151,8 @@
           "blue color",
           "turns blue",
           "blue"
-        ]
+        ],
+        "environment": "Lab"
       }
     ],
     "oils-fats": [
@@ -163,7 +167,7 @@
           "After refrigeration, coconut oil solidifies.",
           "If coconut oil is adulterated, other oils remain as a separate layer."
         ],
-        "pureResult": "Coconut oil solidifies completely — no separate layer visible.",
+        "pureResult": "Coconut oil solidifies completely \u2014 no separate layer visible.",
         "adulteratedResult": "A liquid layer of other oils remains separate on top or bottom.",
         "healthRisk": "Cheaper oils may contain trans fats or harmful substances leading to cardiovascular disease.",
         "riskLevel": "Medium",
@@ -173,7 +177,8 @@
           "does not solidify",
           "not solidified fully",
           "two layers"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "oil-2",
@@ -194,7 +199,8 @@
           "red color",
           "turns red",
           "red"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "oil-3",
@@ -210,7 +216,7 @@
           "If properly winterized, sample will be brilliant, clear and limpid."
         ],
         "pureResult": "Oil remains brilliant, clear and limpid after 5.5 hours in ice.",
-        "adulteratedResult": "Oil becomes turbid or cloudy — improperly winterized.",
+        "adulteratedResult": "Oil becomes turbid or cloudy \u2014 improperly winterized.",
         "healthRisk": "Improperly winterized oil may contain saturated fats that can affect cardiovascular health.",
         "riskLevel": "Low",
         "keywords": [
@@ -219,7 +225,8 @@
           "not clear",
           "hazy",
           "white"
-        ]
+        ],
+        "environment": "Home"
       }
     ],
     "sweets-sugar": [
@@ -243,7 +250,8 @@
           "does not burn",
           "cracking sound",
           "spreads"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "sweet-2",
@@ -265,7 +273,8 @@
           "white residue",
           "chalky deposit",
           "bottom residue"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "sweet-3",
@@ -290,7 +299,8 @@
           "shreds",
           "doesn't powder",
           "breaks into pieces"
-        ]
+        ],
+        "environment": "Home"
       }
     ],
     "cereals-pulses": [
@@ -304,7 +314,7 @@
           "Examine the impurities visually.",
           "Pure food grains will not have dust, pebbles, stones, straw, weed seeds, insects, rodent hair or excreta."
         ],
-        "pureResult": "No visible impurities — clean, uniform grains.",
+        "pureResult": "No visible impurities \u2014 clean, uniform grains.",
         "adulteratedResult": "Visible presence of dust, pebbles, stones, weed seeds, insects or rodent matter.",
         "healthRisk": "Can cause food poisoning, infections, choking hazards. Rodent excreta can spread Salmonella and Hantavirus.",
         "riskLevel": "High",
@@ -316,7 +326,8 @@
           "impurities",
           "foreign matter",
           "rodent"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "cereal-2",
@@ -326,7 +337,7 @@
         "procedure": [
           "Take a small quantity of food grains in a glass plate.",
           "Examine the sample visually.",
-          "Dhatura seeds are flat with edges and blackish brown in colour — can be separated by close examination."
+          "Dhatura seeds are flat with edges and blackish brown in colour \u2014 can be separated by close examination."
         ],
         "pureResult": "No blackish-brown flat edged seeds visible.",
         "adulteratedResult": "Flat, edged, blackish-brown dhatura seeds visible among grains.",
@@ -337,7 +348,8 @@
           "flat seeds",
           "dark seeds",
           "dhatura"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "cereal-3",
@@ -359,7 +371,8 @@
           "particles floating",
           "floating material",
           "excess floating"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "cereal-4",
@@ -374,14 +387,15 @@
         ],
         "pureResult": "Uniform-shaped dal seeds, no edged/square irregular shapes.",
         "adulteratedResult": "Edged, square-shaped khesari dal seeds visible.",
-        "healthRisk": "Lathyrism — a neurological disorder causing irreversible lower body paralysis. Especially dangerous for children and malnourished individuals.",
+        "healthRisk": "Lathyrism \u2014 a neurological disorder causing irreversible lower body paralysis. Especially dangerous for children and malnourished individuals.",
         "riskLevel": "Critical",
         "keywords": [
           "edged seeds",
           "square seeds",
           "irregular shape",
           "different shape seeds"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "cereal-5",
@@ -394,7 +408,7 @@
           "Pure food grains will not leave any colour in water.",
           "Adulterated food grains leave colour immediately in water."
         ],
-        "pureResult": "Water remains clear — no colour released.",
+        "pureResult": "Water remains clear \u2014 no colour released.",
         "adulteratedResult": "Water becomes coloured immediately.",
         "healthRisk": "Artificial dyes can cause allergies, hyperactivity in children, cancer risk with long-term use.",
         "riskLevel": "High",
@@ -404,7 +418,8 @@
           "dye released",
           "color change",
           "water turns"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "cereal-6",
@@ -425,7 +440,8 @@
           "red colour",
           "turns red",
           "red color"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "cereal-7",
@@ -446,7 +462,8 @@
           "colour on cotton",
           "pink color",
           "dye transfer"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "cereal-8",
@@ -456,17 +473,18 @@
         "procedure": [
           "Take a small quantity of pulses in a transparent glass plate.",
           "Examine the impurities visually.",
-          "Chakunda beans can be separated out by close examination — they differ in shape and colour."
+          "Chakunda beans can be separated out by close examination \u2014 they differ in shape and colour."
         ],
         "pureResult": "Uniform pulse seeds, no foreign beans.",
-        "adulteratedResult": "Chakunda beans visible — identifiable by distinct shape and colour.",
+        "adulteratedResult": "Chakunda beans visible \u2014 identifiable by distinct shape and colour.",
         "healthRisk": "Chakunda beans contain toxic compounds causing digestive problems, vomiting, and liver damage.",
         "riskLevel": "High",
         "keywords": [
           "foreign beans",
           "different seeds",
           "unusual seeds"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "cereal-9",
@@ -488,7 +506,8 @@
           "webs",
           "dirty",
           "gritty"
-        ]
+        ],
+        "environment": "Home"
       }
     ],
     "spices": [
@@ -511,7 +530,8 @@
           "no bright flame",
           "dark residue",
           "does not dissolve"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-2",
@@ -520,7 +540,7 @@
         "adulterant": "Papaya seeds",
         "procedure": [
           "Method 1: Add black pepper to glass of water. Pure black pepper settles at bottom. Papaya seeds float on surface.",
-          "Method 2: Spread spice on white paper and examine — black pepper is brown with wrinkled surface and pungent smell. Papaya seeds have smooth oval shape, greenish brown/blackish, repulsive flavour."
+          "Method 2: Spread spice on white paper and examine \u2014 black pepper is brown with wrinkled surface and pungent smell. Papaya seeds have smooth oval shape, greenish brown/blackish, repulsive flavour."
         ],
         "pureResult": "All pepper settles at bottom. Brown wrinkled peppercorns with pungent smell.",
         "adulteratedResult": "Seeds float on water. Smooth oval greenish-brown seeds with repulsive flavour.",
@@ -532,7 +552,8 @@
           "smooth seeds",
           "oval seeds",
           "floats on top"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-3",
@@ -544,7 +565,7 @@
           "Light berries will break easily while genuine black pepper berries will not break."
         ],
         "pureResult": "Berries do not break easily when pressed.",
-        "adulteratedResult": "Some berries break easily — these are light black berries (adulterant).",
+        "adulteratedResult": "Some berries break easily \u2014 these are light black berries (adulterant).",
         "healthRisk": "Light berries have no nutritional value and may be toxic depending on the source.",
         "riskLevel": "Medium",
         "keywords": [
@@ -552,7 +573,8 @@
           "soft berries",
           "crushes easily",
           "easy to crush"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-4",
@@ -573,7 +595,8 @@
           "sediment",
           "earthy matter",
           "gritty residue"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-5",
@@ -594,7 +617,8 @@
           "dye in water",
           "color bleeding",
           "streaks"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-6",
@@ -606,14 +630,15 @@
           "Mature black pepper berries sink while light black pepper floats."
         ],
         "pureResult": "All pepper sinks in alcohol.",
-        "adulteratedResult": "Some berries float in alcohol — these are light black berries.",
+        "adulteratedResult": "Some berries float in alcohol \u2014 these are light black berries.",
         "healthRisk": "Light berries are adulterants with no nutritional value.",
         "riskLevel": "Medium",
         "keywords": [
           "floats in alcohol",
           "floating in spirit",
           "floats"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-7",
@@ -633,7 +658,8 @@
           "floats on top",
           "wood particles",
           "dust floating"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-8",
@@ -652,7 +678,8 @@
           "blue colour",
           "turns blue",
           "blue color"
-        ]
+        ],
+        "environment": "Lab"
       },
       {
         "id": "spice-9",
@@ -663,7 +690,7 @@
           "Stir a spoonful of sample of salt in a glass of water.",
           "Presence of chalk will make the solution white and other insoluble impurities will settle down."
         ],
-        "pureResult": "Clear solution — salt dissolves completely with no white residue.",
+        "pureResult": "Clear solution \u2014 salt dissolves completely with no white residue.",
         "adulteratedResult": "Solution turns white and insoluble matter settles at bottom.",
         "healthRisk": "Chalk consumption causes digestive disorders, constipation, kidney stones, and reduced mineral absorption.",
         "riskLevel": "Medium",
@@ -673,7 +700,8 @@
           "cloudy",
           "settles",
           "insoluble"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-10",
@@ -693,7 +721,8 @@
           "floats",
           "floating cloves",
           "cloves on surface"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-11",
@@ -702,7 +731,7 @@
         "adulterant": "Cassia bark",
         "procedure": [
           "Take a small quantity of cinnamon in a glass plate.",
-          "Cassia bark comprises several layers — rough outer and smooth inner layers can be differentiated.",
+          "Cassia bark comprises several layers \u2014 rough outer and smooth inner layers can be differentiated.",
           "Cinnamon barks are very thin and can be rolled around a pencil or pen with distinct smell."
         ],
         "pureResult": "Thin, smooth bark that rolls easily like paper around a pencil with a sweet distinct smell.",
@@ -715,7 +744,8 @@
           "multilayer",
           "does not roll",
           "hard bark"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-12",
@@ -726,7 +756,7 @@
           "Rub a small amount of cumin seeds on palms.",
           "If palms turn black, adulteration is indicated."
         ],
-        "pureResult": "Palms remain clean — no black colour transfer.",
+        "pureResult": "Palms remain clean \u2014 no black colour transfer.",
         "adulteratedResult": "Palms turn black from charcoal dust on adulterated grass seeds.",
         "healthRisk": "Charcoal dust inhalation and ingestion can cause respiratory issues and digestive irritation.",
         "riskLevel": "Medium",
@@ -735,7 +765,8 @@
           "black on hands",
           "black residue",
           "turns black"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-13",
@@ -745,19 +776,20 @@
         "procedure": [
           "Take small quantity of mustard seeds in a glass plate.",
           "Examine visually for argemone seeds.",
-          "Mustard seeds have smooth surface — yellow inside when pressed.",
-          "Argemone seeds have grainy, rough surface — black colour — white inside when pressed."
+          "Mustard seeds have smooth surface \u2014 yellow inside when pressed.",
+          "Argemone seeds have grainy, rough surface \u2014 black colour \u2014 white inside when pressed."
         ],
         "pureResult": "All seeds smooth, yellow inside when pressed.",
         "adulteratedResult": "Some seeds with rough/grainy black surface that show white inside when pressed.",
-        "healthRisk": "Argemone oil (sanguinarine) causes epidemic dropsy — severe fluid accumulation, heart failure, glaucoma, and can be fatal.",
+        "healthRisk": "Argemone oil (sanguinarine) causes epidemic dropsy \u2014 severe fluid accumulation, heart failure, glaucoma, and can be fatal.",
         "riskLevel": "Critical",
         "keywords": [
           "rough seeds",
           "black seeds",
           "grainy surface",
           "white inside"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-14",
@@ -771,14 +803,15 @@
         ],
         "pureResult": "Water remains pale yellow; turmeric retains its colour slowly.",
         "adulteratedResult": "Bright yellow colour immediately leaches into water.",
-        "healthRisk": "Lead chromate is highly toxic — causes lead poisoning, kidney failure, nervous system damage, cancer, and reproductive harm.",
+        "healthRisk": "Lead chromate is highly toxic \u2014 causes lead poisoning, kidney failure, nervous system damage, cancer, and reproductive harm.",
         "riskLevel": "Critical",
         "keywords": [
           "immediate colour",
           "bright yellow water",
           "colour leaches immediately",
           "instant colour"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-15",
@@ -790,7 +823,7 @@
           "Natural turmeric powder leaves light yellow colour while settling down.",
           "Adulterated turmeric powder will leave a strong yellow colour in water while settling down."
         ],
-        "pureResult": "Light, pale yellow colour while settling — normal turmeric colour.",
+        "pureResult": "Light, pale yellow colour while settling \u2014 normal turmeric colour.",
         "adulteratedResult": "Strong, intense yellow colour left in water.",
         "healthRisk": "Metanil yellow is carcinogenic. Lead chromate causes heavy metal poisoning. Both banned in food.",
         "riskLevel": "Critical",
@@ -799,7 +832,8 @@
           "intense yellow",
           "bright yellow",
           "deep yellow colour"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "spice-16",
@@ -819,7 +853,8 @@
           "floats on surface",
           "floating material",
           "particles float"
-        ]
+        ],
+        "environment": "Home"
       }
     ],
     "vegetables-fruits": [
@@ -834,8 +869,8 @@
           "If it is iodised salt, blue colour will develop.",
           "In the case of common salt, there will be no blue colour."
         ],
-        "pureResult": "Blue colour develops — confirms iodised salt.",
-        "adulteratedResult": "No blue colour — indicates common salt being sold as iodised.",
+        "pureResult": "Blue colour develops \u2014 confirms iodised salt.",
+        "adulteratedResult": "No blue colour \u2014 indicates common salt being sold as iodised.",
         "healthRisk": "Iodine deficiency causes goiter, hypothyroidism, intellectual disability in children, and pregnancy complications.",
         "riskLevel": "High",
         "keywords": [
@@ -843,7 +878,8 @@
           "no blue color",
           "no colour change",
           "remains white"
-        ]
+        ],
+        "environment": "Lab"
       },
       {
         "id": "veg-2",
@@ -865,7 +901,8 @@
           "rapid colour release",
           "instant colour",
           "breaks easily"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "veg-3",
@@ -885,7 +922,8 @@
           "green on cotton",
           "colour on blotting",
           "green dye transfer"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "veg-4",
@@ -907,7 +945,8 @@
           "colour separates",
           "green water",
           "dye in water"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "veg-5",
@@ -928,7 +967,8 @@
           "pink on cotton",
           "red on cotton",
           "colour transfer"
-        ]
+        ],
+        "environment": "Home"
       }
     ],
     "beverages": [
@@ -938,7 +978,7 @@
         "name": "Detection of Clay in Coffee Powder",
         "adulterant": "Clay particles",
         "procedure": [
-          "Add ½ teaspoon of coffee powder in a transparent glass of water.",
+          "Add \u00bd teaspoon of coffee powder in a transparent glass of water.",
           "Stir for a minute and keep aside for 5 minutes.",
           "Observe the glass at the bottom.",
           "Pure coffee powder will not leave any clay particles at bottom.",
@@ -954,7 +994,8 @@
           "mud",
           "particles settle",
           "residue at bottom"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "bev-2",
@@ -967,7 +1008,7 @@
           "Coffee powder floats over the water but chicory begins to sink."
         ],
         "pureResult": "Coffee powder floats on water.",
-        "adulteratedResult": "Some powder sinks — the sinking portion is chicory.",
+        "adulteratedResult": "Some powder sinks \u2014 the sinking portion is chicory.",
         "healthRisk": "Chicory is generally safe but its presence reduces coffee quality. May cause allergic reactions in people sensitive to ragweed.",
         "riskLevel": "Low",
         "keywords": [
@@ -975,7 +1016,8 @@
           "powder sinks",
           "chicory sinks",
           "partial sinking"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "bev-3",
@@ -997,7 +1039,8 @@
           "stains paper",
           "colour on lime",
           "immediate stain"
-        ]
+        ],
+        "environment": "Home"
       },
       {
         "id": "bev-4",
@@ -1019,7 +1062,8 @@
           "magnet picks up",
           "filings on magnet",
           "attracted to magnet"
-        ]
+        ],
+        "environment": "Home"
       }
     ]
   }

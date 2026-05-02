@@ -52,6 +52,15 @@ GENERAL_RESPONSES = [
         "🧪 DART means Detect Adulteration with Rapid Test. "
         "It helps people check common food adulteration using simple home-based methods."
     )),
+    ("how to do test", (
+        "To do a test, please specify the food item you want to test (like milk, turmeric, coffee) or the test number if you know it. For example, say 'how to test milk' or 'test 1'."
+    )),
+    ("how to do a test", (
+        "To do a test, please specify the food item you want to test (like milk, turmeric, coffee) or the test number if you know it. For example, say 'how to test milk' or 'test 1'."
+    )),
+    ("how to test", (
+        "To do a test, please specify the food item you want to test (like milk, turmeric, coffee) or the test number if you know it. For example, say 'how to test milk' or 'test 1'."
+    )),
     ("dart", (
         "🧪 DART means Detect Adulteration with Rapid Test. "
         "It is an offline, household-friendly food safety guide that explains simple checks for common adulterants."
@@ -260,7 +269,8 @@ def find_intent(message: str) -> str:
 
 def is_greeting(message: str) -> bool:
     msg = norm(message)
-    return msg in {"hi", "hello", "hey", "namaste", "good morning", "good evening"}
+    greetings = {"hi", "hello", "hey", "namaste", "good morning", "good evening", "how are you", "what's up", "whats up"}
+    return msg in greetings or any(msg.startswith(g + " ") for g in greetings) or msg.replace(" ", "") in greetings
 
 
 def is_observation(message: str) -> bool:
@@ -493,6 +503,16 @@ def answer_for_test_agent(test: Dict[str, Any], message: str, score: int = 75) -
 def answer_general(message: str) -> Optional[Dict[str, Any]]:
     msg = norm(message)
 
+    if is_greeting(message):
+        return {
+            "response": (
+                "Hi, I am your FSSAI DART assistant. Tell me the food item and what you observed, "
+                "or ask for a test procedure. For example: **milk formed dense lather**, "
+                "**turmeric released strong yellow colour**, or **how do I test coffee?**"
+            ),
+            "mode": "dataset_agent",
+        }
+
     for key, response in GENERAL_RESPONSES:
         if key in msg:
             return {"response": response, "mode": "offline"}
@@ -530,16 +550,6 @@ def answer_general(message: str) -> Optional[Dict[str, Any]]:
 
 
 def answer_message(message: str, history: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
-    if is_greeting(message):
-        return {
-            "response": (
-                "Hi, I am your FSSAI DART assistant. Tell me the food item and what you observed, "
-                "or ask for a test procedure. For example: **milk formed dense lather**, "
-                "**turmeric released strong yellow colour**, or **how do I test coffee?**"
-            ),
-            "mode": "dataset_agent",
-        }
-
     context_test = context_test_from_history(history)
     if context_test and is_follow_up(message) and not is_observation(message):
         return answer_for_test_agent(context_test, message)

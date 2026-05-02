@@ -19,9 +19,21 @@ function getStaticResponse(message) {
   for (const [key, response] of Object.entries(STATIC_RESPONSES)) {
     if (key !== "default" && msg.includes(key)) return response;
   }
-  if (msg.includes("hello") || msg.includes("hi") || msg.includes("hey")) {
+  const greetings = ["hello", "hi", "hey", "namaste", "good morning", "good evening", "how are you", "what's up", "whats up"];
+  if (greetings.some(g => msg === g || msg.startsWith(g + " ") || msg.replace(" ", "") === g)) {
     return "👋 Hello! I'm the FSSAI DART Food Safety Assistant. How can I help you today? Ask me about food safety, testing methods, or health risks of adulterants!";
   }
+  if (msg.includes("how to test") || msg.includes("how to do a test") || msg.includes("how to do test")) {
+    return "To do a test, please specify the food item you want to test (like milk, turmeric, coffee) or the test number if you know it. For example, say 'how to test milk' or 'test 1'.";
+  }
+  if (msg.includes("what is dart")) return STATIC_RESPONSES["what is dart"];
+  if (msg.includes("fssai contact")) return STATIC_RESPONSES["fssai contact"];
+  if (msg.includes("report")) return STATIC_RESPONSES["report"];
+  if (msg.includes("milk adulteration")) return STATIC_RESPONSES["milk adulteration"];
+  if (msg.includes("most dangerous")) return STATIC_RESPONSES["most dangerous"];
+  if (msg.includes("turmeric")) return STATIC_RESPONSES["turmeric"];
+  if (msg.includes("spices")) return STATIC_RESPONSES["spices"];
+
   return STATIC_RESPONSES["default"];
 }
 
@@ -96,12 +108,12 @@ export default function Chatbot() {
         <p className="text-gray-500 text-sm mt-1">Ask anything about food adulteration, testing methods, or health risks</p>
         {apiMode && (
           <span className={`inline-block mt-2 text-xs px-3 py-1 rounded-full ${
-            apiMode === "anthropic_ai" ? "bg-green-100 text-green-700" :
+            apiMode === "gemini_ai" ? "bg-green-100 text-green-700" :
             apiMode === "offline" ? "bg-gray-100 text-gray-600" :
             apiMode === "dataset_agent" ? "bg-green-100 text-green-700" :
             "bg-yellow-100 text-yellow-700"
           }`}>
-            {apiMode === "anthropic_ai" ? "🟢 Claude AI Active" :
+            {apiMode === "gemini_ai" ? "🟢 Gemini AI Active" :
              apiMode === "offline" ? "🔴 Offline Mode" :
              apiMode === "dataset_agent" ? "Dataset Agent Active" :
              "🟡 Static Mode"}
@@ -135,7 +147,7 @@ export default function Chatbot() {
                 )}
                 {msg.mode && msg.role === "assistant" && (
                   <div className={`text-xs mt-1 ${msg.role === "user" ? "text-green-200" : "text-gray-400"}`}>
-                    {msg.mode === "ai" ? "🤖 Claude AI" : msg.mode === "dataset_agent" ? "Dataset Agent" : msg.mode === "offline" ? "📋 Offline" : "📋 Static"}
+                    {msg.mode === "gemini_ai" ? "🤖 Gemini AI" : msg.mode === "dataset_agent" ? "Dataset Agent" : msg.mode === "offline" ? "📋 Offline" : "📋 Static"}
                   </div>
                 )}
               </div>
