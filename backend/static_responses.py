@@ -494,7 +494,7 @@ def answer_for_test_agent(test: Dict[str, Any], message: str, score: int = 75) -
 
     return {
         "response": response,
-        "mode": "dataset_agent",
+        "mode": "offline",
         "test_id": test["id"],
         "test_no": test["testNo"],
         "category": category,
@@ -510,7 +510,7 @@ def answer_general(message: str) -> Optional[Dict[str, Any]]:
                 "or ask for a test procedure. For example: **milk formed dense lather**, "
                 "**turmeric released strong yellow colour**, or **how do I test coffee?**"
             ),
-            "mode": "dataset_agent",
+            "mode": "offline",
         }
 
     for key, response in GENERAL_RESPONSES:
@@ -530,7 +530,7 @@ def answer_general(message: str) -> Optional[Dict[str, Any]]:
     if category_id:
         # If the user mentions a category but not a specific test, return the category's test list.
         if any(h in msg for h in ("all", "list", "show", "every", "full", "how to", "steps", "test")):
-            return {"response": list_tests_for_category(category_id), "mode": "dataset_agent", "_category_fallback": True}
+            return {"response": list_tests_for_category(category_id), "mode": "offline", "_category_fallback": True}
         category = CATEGORY_BY_ID.get(category_id)
         if category:
             items = [t for t in ALL_TESTS if t["category_id"] == category_id]
@@ -542,7 +542,7 @@ def answer_general(message: str) -> Optional[Dict[str, Any]]:
                     f"Top tests:\n{preview}\n\n"
                     f"What would you like to check first? You can tell me a food item, test number, or what you observed."
                 ),
-                "mode": "dataset_agent",
+                "mode": "offline",
                 "_category_fallback": True,
             }
 
@@ -570,7 +570,7 @@ def answer_message(message: str, history: Optional[List[Dict[str, Any]]] = None)
                 f"Closest matches:\n{options}\n\n"
                 "Tell me the food item and the exact step you performed, and I will narrow it down."
             ),
-            "mode": "dataset_agent",
+            "mode": "offline",
         }
 
         ranked = find_ranked_tests(message)
@@ -590,7 +590,7 @@ def answer_message(message: str, history: Optional[List[Dict[str, Any]]] = None)
                     f"{options}\n\n"
                     f"{pick('clarify')}"
                 ),
-                "mode": "dataset_agent",
+                "mode": "offline",
             }
 
         return answer_for_test_agent(test, message, score)
@@ -608,7 +608,7 @@ def answer_message(message: str, history: Optional[List[Dict[str, Any]]] = None)
             "- or the test number/name\n\n"
             "Then I can match it to the DART dataset and guide you step by step."
         ),
-        "mode": "dataset_agent",
+        "mode": "offline",
     }
 
 

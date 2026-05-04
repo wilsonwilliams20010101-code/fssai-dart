@@ -110,12 +110,12 @@ export default function Chatbot() {
           <span className={`inline-block mt-2 text-xs px-3 py-1 rounded-full ${
             apiMode === "gemini_ai" ? "bg-green-100 text-green-700" :
             apiMode === "offline" ? "bg-gray-100 text-gray-600" :
-            apiMode === "dataset_agent" ? "bg-green-100 text-green-700" :
+            apiMode === "offline" ? "bg-green-100 text-green-700" :
             "bg-yellow-100 text-yellow-700"
           }`}>
             {apiMode === "gemini_ai" ? "🟢 Gemini AI Active" :
              apiMode === "offline" ? "🔴 Offline Mode" :
-             apiMode === "dataset_agent" ? "Dataset Agent Active" :
+             apiMode === "offline" ? "Offline Active" :
              "🟡 Static Mode"}
           </span>
         )}
@@ -147,7 +147,7 @@ export default function Chatbot() {
                 )}
                 {msg.mode && msg.role === "assistant" && (
                   <div className={`text-xs mt-1 ${msg.role === "user" ? "text-green-200" : "text-gray-400"}`}>
-                    {msg.mode === "gemini_ai" ? "🤖 Gemini AI" : msg.mode === "dataset_agent" ? "Dataset Agent" : msg.mode === "offline" ? "📋 Offline" : "📋 Static"}
+                    {msg.mode === "gemini_ai" ? "🤖 Gemini AI" : msg.mode === "offline" ? "Offline" : msg.mode === "offline" ? "📋 Offline" : "📋 Static"}
                   </div>
                 )}
               </div>
